@@ -1,0 +1,108 @@
+# Symbols in the grammar are case-sensitive.
+# 
+# This grammar uses a convention that
+#    - terminals are lowercase          (president)
+#    - preterminals are capitalized     (Noun)
+#    - other nonterminals are all-caps  (NP)
+# 
+# This convention just makes grammars more readable to humans.  Thus:
+#
+#    - When *you* are writing grammars in questions 3 and 6, you should 
+#      follow this convention unless you have a good reason not to.  
+#
+#    - But your *program* should still work with grammars that don't
+#      follow this convention.  So how can your program reliably tell
+#      the difference between terminal and nonterminal symbols?  If
+#      there is at least one rule for rewriting a symbol, then that
+#      symbol is a nonterminal and should be rewritten.
+#######################
+
+# Rules for creating full sentences.
+
+#Modification 2e.1) Sentences with full stops are generally more common
+4	ROOT	S .			
+#Modification 2e.2) Exclaimations are generally least common
+1	ROOT	S !			
+#Modification 2e.3) Question marks are common but not as common as the statements
+2	ROOT	is it true that S ?     # mixing terminals and nonterminals is ok.
+
+# The basic grammar rules.  Here's what the abbreviations stand for:
+#    S  = sentence
+#    NP = noun phrase
+#    VP = verb phrase
+#    PP = prepositional phrase
+#    Det = determiner (sometimes called "article")
+#    Prep = preposition
+#    Adj = adjective
+
+1	S	NP VP
+1	VP	Verb NP
+1	NP	Det Noun
+#Modification 2d.1) The rule that caused longer sentences - now modified to favour shorter sentences 
+0.4	NP	NP PP			
+1	PP	Prep NP
+#Modification 2d.2) The rule that caused less frequent consecutive adjectives - now modified to favour otherwise 
+2	Noun	Adj Noun		
+
+# Vocabulary.  Your program can see that "ate" is a terminal
+# symbol because there exists no rule for rewriting it.
+# Any symbol that can rewrite as a terminal (or a string of 
+# terminals, like "chief of staff") is called a "preterminal."  Notice 
+# that a preterminal is a special kind of nonterminal.
+
+1	Verb	ate
+1	Verb	wanted
+1	Verb	kissed
+1	Verb	understood
+1	Verb	pickled
+1 Verb  perplexed
+
+1	Det	the
+#Modification 2e.4) Determiner 'a' is the most common one and thus should have more frequency than others
+2	Det	a
+1	Det	every
+
+1	Noun	president
+1	Noun	sandwich
+1	Noun	pickle
+1	Noun	chief of staff
+1	Noun	floor
+1 Noun  proposal
+1 Noun  desk
+
+1	Adj	fine
+1	Adj	delicious
+1	Adj	perplexed
+1	Adj	pickled
+
+1	Prep	with
+1	Prep	on
+1	Prep	under
+1	Prep	in
+
+
+#Modifications for question 3 are below 
+1	NP	PrNoun			#Mod 3a.1 - A noun phrase can be a proper noun 
+1	PrNoun	Sally			#Mod 3a.2 - Adding a proper noun	
+0.3	NP	NP CC NP		#Mod 3b.1 - two noun phrases with conjunction in between still imply a noun phrase
+0.4	Verb	Verb CC Verb		#Mod 3b.2 - two verbs with conjunction in between still imply a verb 
+1	CC	and			#Mod 3b.3 - including a conjunction 'and'
+0.4	CC	or			#Mod 3b.4 - including a conjunction 'or'
+0.4	S	NP V_it			#Mod 3c.1 - Including intransitive verbs in a sentence without a leading object
+1	V_it	sighed			#Mod 3c.2 - Included sighed as an intransitive verb
+0.2	VP	Verb Rel S		#Mod 3d.1 - A verb phrase can be a long verb with a relative clause using 'that'
+1	Rel	that			#Mod 3d.2 - Adding that as a word that joins a relative clause
+0.4	Verb	thought			#Mod 3d.3 - Adding another verb 'thought'
+1	PRN	it			#Mod 3e.1 - Adding pronoun it
+0.5	S	PRN VP			#Mod 3e.2 - A sentence can start with a pronoun (modified S -> NP VP)
+0.1	VP	VP Rel S		#Mod 3e.3 - A modified version of Mod3d.1
+0.2	S	Rel S VP		#Mod 3f.1 - A sentence can start with 'that' followed by a sentence which caused the action described by VP
+0.6	Adj	Adv Adj			#Mod 3g.1 - An adverb generally preceedes an adjective 
+1	Adv	very			#Mod 3g.2 - Adding an adverb 'very'
+0.4	VP	V_it PP			#Mod 3h.1 - A verb phrase can have a prepositional phrase describing the verb
+0.4	VP	VP PP			#Mod 3h.2 - Modified 3h.1, wherein a verb phrase can have a prepositional describing another verb phrase
+1	V_it	worked			#Mod 3h.3 - Adding another intransitive verb
+
+
+
+

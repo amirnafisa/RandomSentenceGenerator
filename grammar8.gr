@@ -1,0 +1,221 @@
+# Symbols in the grammar are case-sensitive.
+# 
+# This grammar uses a convention that
+#    - terminals are lowercase          (president)
+#    - preterminals are capitalized     (Noun)
+#    - other nonterminals are all-caps  (NP)
+# 
+# This convention just makes grammars more readable to humans.  Thus:
+#
+#    - When *you* are writing grammars in questions 3 and 6, you should 
+#      follow this convention unless you have a good reason not to.  
+#
+#    - But your *program* should still work with grammars that don't
+#      follow this convention.  So how can your program reliably tell
+#      the difference between terminal and nonterminal symbols?  If
+#      there is at least one rule for rewriting a symbol, then that
+#      symbol is a nonterminal and should be rewritten.
+#######################
+#    S  = sentence
+#    NP = noun phrase
+#    VP = verb phrase
+#    PP = prepositional phrase
+#    NPS = singular noun phrase
+#    NPP = plural noun phrase
+#    VPS = singular verb phrase
+#    VPP = plural verb phrase
+#    VP_PRS = Verb phrase with verb in simple present tense
+#    Verb_prs = Verb in simple present tense
+#    V_it = intransitive verb
+#    Rel = 'that' (when that is used with a relative clause)
+#    PrNoun = proper noun
+#    Prn_s = singular pronoun
+#    Prn_p = plural pronoun
+#    Det = determiner (sometimes called "article")
+#    Det_a = 'a'
+#    Det_an = 'an'
+#    Det_s = determiner which is followed by singular noun
+#    Noun = noun
+#    Noun_s = singular noun
+#    Noun_p = plural noun
+#    Noun_a = noun that follows determiner 'a'
+#    Noun_an = noun that follows determiner 'an'
+#    Verb = verb
+#    Verb_s = singular verb
+#    Verb_p = plural verb
+#    Cc = conjunction
+#    Prep = preposition
+#    Adj = adjective
+#    Adj_a = adjective which follows a determiner 'a'
+#    Adj_an = adjective which follows a determiner 'an'
+#    Adv = adverb
+#    Adv_a = adverb which follows a determiner 'a'
+#    Adv_an = adverb which follows a determiner 'an'
+#
+#######################
+
+
+# Rules for creating full sentences.
+
+4	ROOT	S .			
+1	ROOT	S !			
+2	ROOT	is it true that S ?     # mixing terminals and nonterminals is ok.
+1	ROOT	QAux S_PRS ?
+
+1	S	NPS VPS			#Mod 7e.1: a sentence with singular subject requires singular verb 
+1	S	NPP VPP			#Mod 7e.2: a sentence with plural subject requires plural verb
+0.4	S	NP V_it			
+0.1	S	Rel S Verb_s NPS	#Mod 7e.3: a sentence starting with a relative clause ends with verb followed by subject (singular verb paired with singular noun phrase)
+0.1	S	Rel S Verb_p NPP	#Mod 7e.4: a sentence starting with a relative clause ends with verb followed by subject (plural verb paired with plural noun phrase)		
+
+1	S	Prn_s VPS		#Mod 7e.5: singular pronoun subject paired with singular verb phrase 
+1	S	Prn_p VPP		#Mod 7e.6: plural pronoun subject paired with plural verb phrase
+
+1	S_PRS	NP VP_PRS
+1	NP	NPS			#Mod 7e.7: noun phrase can be singular noun phrase or plural noun phrase
+1	NP	NPP			#Mod 7e.8: noun phrase can be singular noun phrase or plural noun phrase
+2	NPS	PrNoun			#Mod 3a.1 - A noun phrase can be a proper noun
+0.2	NPS	NPS PP			#Mod 7e.9: rule modified to expand singular noun phrase to another singular noun phrase	
+0.2	NPP	NPP PP			#Mod 7e.10: rule modified to expand plural noun phrase to another plural noun phrase
+0.1	NPS	(Det_a) (Quant_s) Noun_a		#Mod 7a.1: pairing determiners with appropriate nouns. Also a noun which follows 'a' is singular
+0.4	NPP	(Quant_p) Noun_p		#Mod 7a.1: pairing determiners with appropriate nouns. Also a noun which follows 'a' is singular
+
+1	NPS	Det_an Noun_an		#Mod 7a.2: pairing determiners with appropriate nouns. Also a noun which follows 'an' is singular
+1	NPS	Det_a Noun_a		#Mod 7e.11: rule for determiners other than a and an which can be paired with singular nouns
+1	NPP	Det Noun_p		#Mod 7e.12: rule for determiners which can be paired with plural nouns
+1	NPS	Det Noun_s
+0.2	NPP	NP Cc NP		#Mod 7e.13: two noun phrases, singular or plural can be joined with a conjunction 'and'. This will form a plural noun phrase because of conjunction 'and'
+
+1	VP	VPS			#Mod 7e.14: a verb phrase may be singular or plural
+1	VP	VPP			#Mod 7e.15: a verb phrase may be singular or plural
+0.4	VP	V_it PP			
+1	VPS	Verb_s NP		#Mod 7e.16: singular verb phrase formed of singular verb
+1	VPP	Verb_p NP		#Mod 7e.17: plural verb phrase formed of plural verb
+0.1	VPS	Verb_s Rel S		#Mod 7e.18: singular verb phrase containing a singular verb and a relative clause 	
+0.1	VPP	Verb_p Rel S		#Mod 7e.19: plural verb phrase containing a plural verb and a relative clause 
+0.1	VPS	VPS Rel S		#Mod 7e.20: singular verb phrase containing a relative clause starts with a singular verb phrase
+0.1	VPP	VPP Rel S		#Mod 7e.21: plural verb phrase containing a relative clause starts with a plural verb phrase
+0.4	VPS	VPS PP			#Mod 7e.22: singular verb phrase with a prepositional phrase will create a singular verb phrase
+0.4	VPP	VPP PP			#Mod 7e.23: plural verb phrase with a prepositional phrase will create a plural verb phrase
+
+1	VP_PRS	Verb_prs NP		#Mod 8 - Simple present tense verb modification for Yes No questions
+
+1	PP	Prep NP
+
+1	Noun_s	Noun_a			#Mod 7e.24: singular nouns are generally preceeded by 'a' or 'an'
+1	Noun_s	Noun_an			#Mod 7e.25: singular nouns are generally preceeded by 'a' or 'an'
+
+1	Noun_a	Adj_a Noun		#Mod 7a.3: rule to choose appropriate adjectives for a noun that was being preceeded by determiner a
+1	Noun_an	Adj_an Noun		#Mod 7a.4: rule to choose appropriate adjectives for a noun that was being preceeded by determiner an
+
+0.2	Verb	Verb Cc Verb		
+
+0.2	Adj_a	Adv_a Adj		#Mod 7a.5: rule to choose appropriate adverb for an adjective that was being preceeded by determiner a
+0.2	Adj_an	Adv_an Adj		#Mod 7a.6: rule to choose appropriate adverb for an adjective that was being preceeded by determiner an
+
+1	Adj	Adj_a			#Mod 7a.7: Categorizing adjectives by the determiners that should preceede them
+1	Adj	Adj_an			#Mod 7a.8: Categorizing adjectives by the determiners that should preceede them	
+
+1	Adv	Adv_a			#Mod 7a.9: Categorizing adverbs by the determiners that should preceede them
+1	Adv	Adv_an			#Mod 7a.10: Categorizing adverbs by the determiners that should preceede them
+
+
+# Vocabulary.  Your program can see that "ate" is a terminal
+# symbol because there exists no rule for rewriting it.
+# Any symbol that can rewrite as a terminal (or a string of 
+# terminals, like "chief of staff") is called a "preterminal."  Notice 
+# that a preterminal is a special kind of nonterminal.
+
+#Singular and plural verbs picked to form random sentences
+1	Verb_s	wants
+1	Verb_s	eats
+1	Verb_s	chooses
+1	Verb_p	choose
+1	Verb_p	run
+1	Verb_p	select
+1	Verb_p	ate
+
+#intransitive verbs 
+1	V_it	sighed			
+1	V_it	worked
+
+#Determiners 
+1	Det	the
+1	Det_s	every
+1	Det_a	a
+1	Det_an	an
+
+#Proper Nouns 
+1	PrNoun	Sally			#Mod 3a.2 - Adding a proper noun	
+
+#Nouns
+1	Noun	Noun_a
+1	Noun	Noun_an
+1	Noun_a	president
+1	Noun_a	chief of staff
+1	Noun_a	sandwich
+1	Noun_an	apple
+1	Noun_p	apples
+1	Noun_p	presidents
+1	Noun_p	citizens
+1	Noun_a	pickle
+1	Noun_s	pickle
+#Pronouns
+1	Prn_s	it			
+1	Prn_p	they
+
+#Adjectives
+1	Adj_a	delicious
+1	Adj_an	ambivalent
+
+#Prepositions
+1	Prep	with
+1	Prep	on
+1	Prep	under
+1	Prep	in
+
+#Conjuction
+1	Cc	and			
+
+#that used with relative clause
+1	Rel	that			
+
+#Adverbs
+1	Adv_a	very			
+1	Adv_an	amazingly	
+
+#Quantifiers
+1	Quant_s single
+1	Quant_p	many
+1	Quant_p	several
+1	Quant_p some
+1	Quant_p a lot of
+1	Quant_p a few
+
+#Auxiliary verbs that ask questions
+1	QAux	did
+1	QAux	will
+
+#Verb Present Tense
+1	Verb_prs	eat
+1	Verb_prs	drink
+1	Verb_prs	take
+
+#Tenses 
+1	Verb_s  ate
+1	Verb_s  will eat
+1	Verb_s 	has eaten
+1	Verb_s  had eaten
+1	Verb_s  will have eaten
+1	Verb_s  is eating
+1	Verb_s  was eating
+1	Verb_s  will be eating
+1	Verb_s	has been eating
+1	Verb_s	had been eating
+1	Verb_s	will have been eating
+1	Verb_s	kissed
+1	Verb_s	thought
+
+#Relative Clause
+0.3	NPS	NPS Rel VPS
+0.3	NPS	NP Rel NPS Verb_s
