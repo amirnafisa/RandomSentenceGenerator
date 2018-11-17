@@ -126,7 +126,7 @@ def rand_sentence_generator(hash_table, cum_freq, key):
                 sentence = sentence + "}"
 
     elif non_terminals_counter > 0:                 #When you hit a terminal
-        sentence = sentence + " " + key + " "             #Update sentence with the terminal word
+        sentence = sentence + key + " "             #Update sentence with the terminal word
 
 
     if non_terminals_counter == 0:                  #If the non terminal expansions reach max limit, print "..."
